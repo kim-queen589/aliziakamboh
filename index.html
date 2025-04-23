@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduShare - Share Your Educational Journey</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Featured Media Styles */
+        .featured-media {
+            padding: 4rem 5%;
+            background-color: var(--light-gray);
+        }
+
+        .featured-media h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Admin Panel Styles */
+        /* Logo styles */
+        .logo {
+            padding: 0.5rem 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Admin section styles */
+        .admin-section {
+            display: none;
+            padding: 2rem 5%;
+            background-color: #f5f5f5;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .media-upload {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .media-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .media-item img, 
+        .media-item video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .media-item .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .error-message {
+            color: var(--accent-color);
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .delete-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .admin-controls {
+            display: none;
+        }
+
+        .admin-controls.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <div class="logo-container">
+                        <img src="alizia.jpg" alt="Profile" class="profile-image">
+                        <span class="logo-text">EduShare</span>
+                    </div>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="active" onclick="showSection('home')">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="experiences.html">Experiences</a></li>
+                <li><a href="share.html">Share Story</a></li>
+                
+                
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="#admin" onclick="showSection('admin')" id="admin-link">Admin</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="section active">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Share Your Educational Journey</h1>
+                    <p>A platform where students and teachers come together to share their experiences and inspire others.</p>
+                <div class="cta-buttons">
+                    <a href="share.html" class="btn primary">Share Your Experience</a>
+                    <a href="experiences.html" class="btn secondary">Read Stories</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured-stories">
+            <h2>Recent Stories</h2>
+            <div class="stories-grid" id="recent-stories">
+                <!-- Stories will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <section class="featured-media">
+            <h2>Featured Media</h2>
+            <div class="media-grid" id="public-media-grid">
+                <!-- Admin uploaded media will be displayed here -->
+            </div>
+        </section>
+        </section>
+
+        <section id="admin" class="admin-section">
+            <div id="login-section" class="login-form">
+                <h2>Admin Login</h2>
+                <form id="admin-login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="error-message" id="login-error">
+                        Invalid username or password
+                    </div>
+                    <button type="submit" class="btn primary" style="width: 100%">Login</button>
+                </form>
+            </div>
+
+            <div id="admin-dashboard" class="admin-controls">
+                <h2>Admin Dashboard</h2>
+                <button class="btn secondary" id="logout-btn" style="margin-bottom: 1rem;">Logout</button>
+                
+                <div class="media-upload">
+                    <h3>Upload Media</h3>
+                    <form id="upload-form">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="media">Media File (Image/Video)</label>
+                            <input type="file" id="media" name="media" accept="image/*,video/*" required>
+                        </div>
+                        <button type="submit" class="btn primary">Upload</button>
+                    </form>
+
+                    <h3>Media Library</h3>
+                    <div class="media-grid" id="media-grid">
+                        <!-- Media items will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>EduShare</h3>
+                <p>Connecting through educational experiences</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 EduShare. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Check admin login status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-dashboard').classList.add('active');
+            }
+        });
+
+        // Show/hide sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.section, .admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Admin login handling
+        document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'admin' && password === 'admin123') {
+                localStorage.setItem('adminLoggedIn', 'true');
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('admin-dashboard').classList.add('active');
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('adminLoggedIn');
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('admin-dashboard').classList.remove('active');
+        });
+
+        // Handle media upload
+        const uploadForm = document.getElementById('upload-form');
+        const mediaGrid = document.getElementById('media-grid');
+        let mediaItems = JSON.parse(localStorage.getItem('mediaItems') || '[]');
+
+        function updateMediaGrid() {
+            mediaGrid.innerHTML = '';
+            mediaItems.forEach((item, index) => {
+                const mediaElement = item.type.startsWith('image/') 
+                    ? `<img src="${item.url}" alt="${item.title}">`
+                    : `<video src="${item.url}" controls></video>`;
+
+                const mediaItem = document.createElement('div');
+                mediaItem.className = 'media-item';
+                mediaItem.innerHTML = `
+                    ${mediaElement}
+                    <h3>${item.title}</h3>
+                    <div class="actions">
+                        <button class="delete-btn" onclick="deleteMedia(${index})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                mediaGrid.appendChild(mediaItem);
+            });
+        }
+
+        function deleteMedia(index) {
+            mediaItems.splice(index, 1);
+            localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
+            updateMediaGrid();
+        }
+
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const mediaFile = document.getElementById('media').files[0];
+
+            if (mediaFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mediaItems.push({
+                        title: title,
+                        url: e.target.result,
+                        type: mediaFile.type,
+                        date: new Date().toISOString()
+                    });
+                    localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
+                    updateMediaGrid();
+                    uploadForm.reset();
+                };
+                reader.readAsDataURL(mediaFile);
+            }
+        });
+
+        // Initial load of media items
+        updateMediaGrid();
+
+        // Function to display media on the public home page
+        function updatePublicMediaGrid() {
+            const publicMediaGrid = document.getElementById('public-media-grid');
+            if (publicMediaGrid) {
+                publicMediaGrid.innerHTML = '';
+                mediaItems.forEach((item) => {
+                    const mediaElement = item.type.startsWith('image/') 
+                        ? `<img src="${item.url}" alt="${item.title}">`
+                        : `<video src="${item.url}" controls></video>`;
+
+                    const mediaItem = document.createElement('div');
+                    mediaItem.className = 'media-item';
+                    mediaItem.innerHTML = `
+                        ${mediaElement}
+                        <h3>${item.title}</h3>
+                    `;
+                    publicMediaGrid.appendChild(mediaItem);
+                });
+            }
+        }
+
+        // Update public media grid when admin uploads or deletes media
+        function updateAllMediaGrids() {
+            updateMediaGrid();
+            updatePublicMediaGrid();
+        }
+
+        // Modify existing functions to update both grids
+        function deleteMedia(index) {
+            mediaItems.splice(index, 1);
+            localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
+            updateAllMediaGrids();
+        }
+
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const mediaFile = document.getElementById('media').files[0];
+
+            if (mediaFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mediaItems.push({
+                        title: title,
+                        url: e.target.result,
+                        type: mediaFile.type,
+                        date: new Date().toISOString()
+                    });
+                    localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
+                    updateAllMediaGrids();
+                    uploadForm.reset();
+                };
+                reader.readAsDataURL(mediaFile);
+            }
+        });
+
+        // Initial load of public media
+        updatePublicMediaGrid();
+    </script>
+</body>
+</html>
